@@ -219,6 +219,8 @@ def main():
                         help="program FPGA board with the given user data")
     parser.add_argument("--program-image", type=str,
                         help="program FPGA board with a combined user bitstream and data")
+    parser.add_argument("-r", "--read-image", type=str,
+                        help="read image from flash memory to file using specified address and size")
     parser.add_argument("-b", "--boot", action="store_true",
                         help="command the FPGA board to exit the "
                              "bootloader and load the user configuration")
@@ -228,6 +230,8 @@ def main():
                         help="device id (vendor:product); default is (1d50:6130)")
     parser.add_argument("-a", "--addr", type=str,
                         help="force the address to write the bitstream to")
+    parser.add_argument("-s", "--size", type=str,
+                        help="set the size of the data to read")
     parser.add_argument("-m", "--meta", action="store_true",
                         help="dump out the metadata for all connected boards in JSON")
     parser.add_argument("--update-bootloader", action="store_true",
@@ -315,6 +319,32 @@ def main():
             for port in boards_needing_update:
                 perform_bootloader_update(port)
 
+    # read an image from flash memory and write to a file
+    if (args.read_image is not None):
+        def progress(info):
+            if isinstance(info, str):
+                print("    " + str(info))
+
+        with active_port:
+            fpga = TinyProg(active_port, progress)
+            if args.addr is not None:
+                addr = parse_int(args.addr)
+            else:
+                addr = 0x28000
+
+            if args.size is not None:
+                size = parse_int(args.size)
+            else:
+                size = 135100
+
+            print("    Reading image from address " + str(addr) + " size " + str(size) + " to file " + args.read_image);
+
+            data = fpga.read(addr, size, False)
+
+            f = open(args.read_image, "wb");
+            f.write(data);
+            f.close();        
+    
     # program the flash memory
     if (args.program is not None) or (args.program_userdata is not None) or (args.program_image is not None):
         boot_fpga = False
