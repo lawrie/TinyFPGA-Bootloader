@@ -34,7 +34,9 @@ all: $(PROJ).rpt fw.bin
 fw.bin: bootloader.bin
 	cp bootloader.bin bootloader_0.bin 
 	cp bootloader.bin bootloader_1.bin 
-	icemulti -v -o fw.bin -a15 -p0 bootloader_0.bin bootloader_1.bin
+	cp bootloader.bin bootloader_2.bin 
+	cp bootloader.bin bootloader_3.bin 
+	icemulti -v -o fw.bin -a15 -p0 bootloader_0.bin bootloader_1.bin bootloader_2.bin bootloader_3.bin
 
 %.rpt: %.asc
 	icetime -d $(DEVICE) -mtr $@ $<
