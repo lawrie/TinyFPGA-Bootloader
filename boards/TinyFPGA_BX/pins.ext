@@ -31,10 +31,10 @@
 #set_io pin_26 J3
 #set_io pin_27 J4
 #set_io pin_28 H4
-set_io pin_29_miso H7
-set_io pin_30_cs F7
-set_io pin_31_mosi G6
-set_io pin_32_sck G7
+set_io pin_29_miso A2 # pin 1
+set_io pin_30_cs A1 # pin 2
+set_io pin_31_mosi B1 # pin 3
+set_io pin_32_sck C2 # pin 4
 #set_io pin_33 J8
 #set_io pin_34 G9
 #set_io pin_35 J9
