@@ -221,6 +221,8 @@ def main():
                         help="program FPGA board with a combined user bitstream and data")
     parser.add_argument("-r", "--read-image", type=str,
                         help="read image from flash memory to file using specified address and size")
+    parser.add_argument("-z", "--read-security-image", type=str,
+                        help="read image from securiry register pages to file")
     parser.add_argument("-b", "--boot", action="store_true",
                         help="command the FPGA board to exit the "
                              "bootloader and load the user configuration")
@@ -340,8 +342,26 @@ def main():
             print("    Reading image from address " + str(addr) + " size " + str(size) + " to file " + args.read_image);
 
             data = fpga.read(addr, size, False)
-
+            print ("    Read " + str(len(data)) + " bytes")
             f = open(args.read_image, "wb");
+            f.write(data);
+            f.close();        
+    
+    # read metadata from flash memory and write to a file
+    if (args.read_security_image is not None):
+        def progress(info):
+            if isinstance(info, str):
+                print("    " + str(info))
+
+        with active_port:
+            fpga = TinyProg(active_port, progress)
+
+            print("    Reading security page image to file " + args.read_security_image);
+
+            data = fpga.read_security_register_page(1)
+            data += fpga.read_security_register_page(2)
+            data += fpga.read_security_register_page(3)
+            f = open(args.read_security_image, "wb");
             f.write(data);
             f.close();        
     
